@@ -49,15 +49,15 @@ document.addEventListener("DOMContentLoaded", async function () {
   /**
    * Listeners
    */
-  document.getElementById('govee-api-key').value = await readLocalStorage('key').then((key) => {
+  document.getElementById('api-key').value = await readLocalStorage('key').then((key) => {
     return key;
   }).catch(async (error) => {
     await writeLocalStorage('key', '');
     return '';
   });
 
-  document.getElementById('govee-api-key').addEventListener('change', async function () {
-    var value = document.getElementById('govee-api-key').value;
+  document.getElementById('api-key').addEventListener('change', async function () {
+    var value = document.getElementById('api-key').value;
     await writeLocalStorage('key', value);
   });
 
