@@ -18,5 +18,8 @@
   "permissions": [
     "sidePanel",
     "storage"
+  ],
+  "host_permissions": [
+    "https://blink-functions.azurewebsites.net/api/*"
   ]
 }

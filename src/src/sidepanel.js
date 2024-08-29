@@ -62,5 +62,30 @@ document.addEventListener("DOMContentLoaded", async function () {
   });
 
 
-  console.log(await readLocalStorage('key'));
+  /**
+   * Load Govee Devices
+   */
+  fetch('https://blink-functions.azurewebsites.net/api/govee/devices', {
+    method: "GET",
+    headers: {
+      "x-functions-key": await readLocalStorage('key'),
+      "Content-Type": "application/json"
+    }
+  })
+    .then(response => response.json())
+    .then(devices => {
+      console.log(devices);
+      document.getElementById('lights').innerHTML = "";
+      devices.forEach((device) => {
+        const id = device.device;
+        const name = device.deviceName;
+        const sku = device.sku;
+        const type = device.type;
+        document.getElementById('lights').innerHTML += 
+        `
+        <div>${name}</div>
+        `
+      });
+    })
+    .catch(error => console.error("Error loading lights:", error));
 });
