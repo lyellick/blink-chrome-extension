@@ -1,4 +1,4 @@
-# <img src="public/icons/icon_48.png" width="45" align="left"> Govee Chrome Extension
+# <img src="public/icons/govee-icon.png" width="45" align="left" style="padding-right:1rem"> Govee Chrome Extension
 
 My Chrome Extension
 
