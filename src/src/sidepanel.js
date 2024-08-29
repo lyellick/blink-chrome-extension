@@ -77,36 +77,52 @@ document.addEventListener("DOMContentLoaded", async function () {
       console.log(devices);
       document.getElementById('devices').innerHTML = "";
       devices.forEach((device) => {
-        // Get device state.
-        
         const id = device.device;
         const name = device.deviceName;
         const sku = device.sku;
+
+        setInterval(async () => {
+          fetch(`https://blink-functions.azurewebsites.net/api/govee/${id}/state`, {
+            method: "GET",
+            headers: {
+              "x-functions-key": await readLocalStorage('key'),
+              "Content-Type": "application/json"
+            }
+          })
+            .then(response => response.json())
+            .then(device => {
+              console.log(device);
+              document.getElementById(`${device.MACAddress}-state`).innerHTML = device.On ? 'ON' : 'OFF';
+              document.getElementById(`${device.MACAddress}-state`).setAttribute('class', device.On ? 'badge text-bg-success' : 'badge text-bg-danger');
+            })
+            .catch(error => console.error("Error loading  states:", error));
+        }, 5000);
+
         switch (device.type) {
           case 'devices.types.light':
             document.getElementById('devices').innerHTML +=
-            `
+              `
             <div id="${id}">
               <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center justify-content-between gap-2">
                   <i class="bi bi-lightbulb fs-5"></i>  
                   <div>${name}</div>
                 </div>
-                <span class="badge text-bg-dark">${sku}</span>
+                <span id="${id}-state" class="badge text-bg-dark">UNKNOWN</span>
               </div>
             </div>
             `
             break;
           case 'devices.types.socket':
             document.getElementById('devices').innerHTML +=
-            `
+              `
             <div id="${id}">
               <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center justify-content-between gap-2">
                   <i class="bi bi-plug fs-5"></i>  
                   <div>${name}</div>
                 </div>
-                <span class="badge text-bg-dark">${sku}</span>
+                <span id="${id}-state" class="badge text-bg-dark">UNKNOWN</span>
               </div>
             </div>
             `
