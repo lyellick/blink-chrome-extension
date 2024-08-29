@@ -75,16 +75,45 @@ document.addEventListener("DOMContentLoaded", async function () {
     .then(response => response.json())
     .then(devices => {
       console.log(devices);
-      document.getElementById('lights').innerHTML = "";
+      document.getElementById('devices').innerHTML = "";
       devices.forEach((device) => {
+        // Get device state.
+        
         const id = device.device;
         const name = device.deviceName;
         const sku = device.sku;
-        const type = device.type;
-        document.getElementById('lights').innerHTML += 
-        `
-        <div>${name}</div>
-        `
+        switch (device.type) {
+          case 'devices.types.light':
+            document.getElementById('devices').innerHTML +=
+            `
+            <div id="${id}">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center justify-content-between gap-2">
+                  <i class="bi bi-lightbulb fs-5"></i>  
+                  <div>${name}</div>
+                </div>
+                <span class="badge text-bg-dark">${sku}</span>
+              </div>
+            </div>
+            `
+            break;
+          case 'devices.types.socket':
+            document.getElementById('devices').innerHTML +=
+            `
+            <div id="${id}">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center justify-content-between gap-2">
+                  <i class="bi bi-plug fs-5"></i>  
+                  <div>${name}</div>
+                </div>
+                <span class="badge text-bg-dark">${sku}</span>
+              </div>
+            </div>
+            `
+            break;
+          default:
+            break;
+        }
       });
     })
     .catch(error => console.error("Error loading lights:", error));
