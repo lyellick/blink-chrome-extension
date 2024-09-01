@@ -74,7 +74,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   })
     .then(response => response.json())
     .then(devices => {
-      console.log(devices);
       document.getElementById('devices').innerHTML = "";
       devices.forEach((device) => {
         const id = device.device;
@@ -91,9 +90,17 @@ document.addEventListener("DOMContentLoaded", async function () {
           })
             .then(response => response.json())
             .then(device => {
-              console.log(device);
-              document.getElementById(`${device.MACAddress}-state`).innerHTML = device.On ? 'ON' : 'OFF';
-              document.getElementById(`${device.MACAddress}-state`).setAttribute('class', device.On ? 'badge text-bg-success' : 'badge text-bg-danger');
+              document.getElementById(`${device.MACAddress}-state`).checked = device.On;
+              document.addEventListener('change', async () => {
+                var state = document.getElementById(`${device.MACAddress}-state`).checked;
+                fetch(`https://blink-functions.azurewebsites.net/api/govee/${device.MACAddress}/power/${state ? 'on' : 'off'}`, {
+                  method: "GET",
+                  headers: {
+                    "x-functions-key": await readLocalStorage('key'),
+                    "Content-Type": "application/json"
+                  }
+                }).catch(error => console.error("Error loading  states:", error));
+              });
             })
             .catch(error => console.error("Error loading  states:", error));
         }, 5000);
@@ -108,7 +115,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                   <i class="bi bi-lightbulb fs-5"></i>  
                   <div>${name}</div>
                 </div>
-                <span id="${id}-state" class="badge text-bg-dark">UNKNOWN</span>
+                <div class="form-check form-switch">
+                  <input id="${id}-state" class="form-check-input" type="checkbox" role="switch">
+                </div>
               </div>
             </div>
             `
@@ -122,7 +131,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                   <i class="bi bi-plug fs-5"></i>  
                   <div>${name}</div>
                 </div>
-                <span id="${id}-state" class="badge text-bg-dark">UNKNOWN</span>
+                <div class="form-check form-switch">
+                  <input id="${id}-state" class="form-check-input" type="checkbox" role="switch">
+                </div>
               </div>
             </div>
             `
