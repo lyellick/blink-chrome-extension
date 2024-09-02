@@ -97,12 +97,41 @@ document.addEventListener("DOMContentLoaded", async function () {
                 return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`;
               };
               document.getElementById(`${device.MACAddress}-color`).setAttribute('value', rgbToHex(device.Color));
+
+              document.getElementById(`${device.MACAddress}-color`).addEventListener('change', function (event) {
+                function hexToRgb(hex) {
+                  // Remove the hash symbol if it's present
+                  hex = hex.replace(/^#/, '');
+  
+                  // If the hex code is shorthand (e.g., #03F), expand it to full form (e.g., #0033FF)
+                  if (hex.length === 3) {
+                    hex = hex.split('').map(char => char + char).join('');
+                  }
+  
+                  // Convert the hex code to an RGB object
+                  const red = parseInt(hex.slice(0, 2), 16);
+                  const green = parseInt(hex.slice(2, 4), 16);
+                  const blue = parseInt(hex.slice(4, 6), 16);
+  
+                  return { red, green, blue };
+                }
+  
+                const color = hexToRgb(event.target.value);
+  
+                fetch(`https://blink-functions.azurewebsites.net/api/govee/${device.MACAddress}/color/${color.red}/${color.green}/${color.blue}`, {
+                  method: "GET",
+                  headers: {
+                    "x-functions-key": key,
+                    "Content-Type": "application/json"
+                  }
+                }).catch(error => console.error(`Error changing "${device.MACAddress}"  color:`, error));
+              });
             } catch {
 
             }
 
             document.getElementById(`${device.MACAddress}-state`).checked = device.On;
-            document.addEventListener('change', async () => {
+            document.getElementById(`${device.MACAddress}-state`).addEventListener('change', async () => {
               var state = document.getElementById(`${device.MACAddress}-state`).checked;
               fetch(`https://blink-functions.azurewebsites.net/api/govee/${device.MACAddress}/power/${state ? 'on' : 'off'}`, {
                 method: "GET",
